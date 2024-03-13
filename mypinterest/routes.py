@@ -12,7 +12,7 @@ def index():
     form_login = FormLogin()
     if form_login.validate_on_submit():
         user = User.query.filter_by(email=form_login.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form_login.password.data):
+        if user and bcrypt.check_password_hash(user.password.encode("utf-8"), form_login.password.data):
             login_user(user)
 
             return redirect(url_for("profile", id_user=user.id))
@@ -24,7 +24,7 @@ def index():
 def account():
     create_user = FormCreateUser()
     if create_user.validate_on_submit():
-        password = bcrypt.generate_password_hash(create_user.password.data)
+        password = bcrypt.generate_password_hash(create_user.password.data).decode("utf-8")
         user = User(username=create_user.username.data, password=password, email=create_user.email.data)
 
         db.session.add(user)
